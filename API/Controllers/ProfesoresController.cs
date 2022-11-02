@@ -77,14 +77,47 @@ namespace API.Controllers
 
         // PUT api/<ProfesoresController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<IActionResult> Put(Int64 id, [FromBody] Profesores profesores)
         {
+            try
+            {
+                if(id != profesores.id_profesor){
+
+                    return NotFound();
+                }
+
+                _context.Update(profesores);
+                await _context.SaveChangesAsync();
+                return Ok(new { message = "Registro actualizado" });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
         }
 
         // DELETE api/<ProfesoresController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> Delete(Int64 id)
         {
+            try
+            {
+                var lisProfesor = await _context.Profesores.FindAsync(id);
+                if (id != lisProfesor.id_profesor)
+                {
+                    return NotFound();
+                }
+
+                _context.Profesores.Remove(lisProfesor);
+                await _context.SaveChangesAsync();
+                return Ok(new { message = "Registro eliminado" });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
